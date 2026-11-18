@@ -1,0 +1,84 @@
+# Danh sách lỗi — SAU người duyệt (v3)
+ảnh đã quét: 193
+
+label_format -> 10 dòng
+missing_labels -> 3 dòng
+second_opinion -> 53 dòng
+
+[WARN ] BOX_HUGE             img_0018.txt:1  Box phủ gần toàn bộ ảnh
+[WARN ] BOX_HUGE             img_0128.txt:1  Box phủ gần toàn bộ ảnh
+[WARN ] BOX_HUGE             img_0196.txt:1  Box phủ gần toàn bộ ảnh
+[WARN ] BOX_TINY             img_0026.txt:6  Cạnh ngắn box chỉ có 11.41px
+[WARN ] BOX_TINY             img_0051.txt:5  Cạnh ngắn box chỉ có 8.91px
+[WARN ] BOX_TINY             img_0069.txt:2  Cạnh ngắn box chỉ có 11.22px
+[WARN ] BOX_TINY             img_0161.txt:2  Cạnh ngắn box chỉ có 10.26px
+[WARN ] BOX_TINY             img_0161.txt:3  Cạnh ngắn box chỉ có 11.40px
+[WARN ] BOX_TINY             img_0161.txt:4  Cạnh ngắn box chỉ có 11.87px
+[WARN ] BOX_TINY             img_0183.txt:11  Cạnh ngắn box chỉ có 11.78px
+[WARN ] EMPTY_LABEL          img_0097  file nhãn rỗng: ảnh nền hay thiếu nhãn?
+[WARN ] EMPTY_LABEL          img_0129  file nhãn rỗng: ảnh nền hay thiếu nhãn?
+[WARN ] EMPTY_LABEL          img_0192  file nhãn rỗng: ảnh nền hay thiếu nhãn?
+[WARN ] POSSIBLE_FALSE_POS   img_0014.txt:2  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0022.txt:2  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0035.txt:2  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0068.txt:8  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0069.txt:2  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0075.txt:6  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0091.txt:7  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0093.txt:3  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0095.txt:6  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0111.txt:2  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0124.txt:8  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0131.txt:11  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0134.txt:5  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0149.txt:3  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0150.txt:3  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0180.txt:5  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0189.txt:4  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0191.txt:1  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0206.txt:1  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_FALSE_POS   img_0212.txt:4  Nhãn không khớp với vật thể nào model nhìn thấy
+[WARN ] POSSIBLE_LOOSE_BOX   img_0015  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0018  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0036  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0045  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0046  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0054  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0058  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0064  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0077  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0082  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0090  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0099  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0119  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0125  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0142  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0175  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0200  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_LOOSE_BOX   img_0212  Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch
+[WARN ] POSSIBLE_MISSING     img_0032  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0062  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0121  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0126  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0127  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0127  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0135  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0159  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0160  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0183  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0199  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_MISSING     img_0220  Model thấy vật thể nhưng không có nhãn khớp
+[WARN ] POSSIBLE_WRONG_CLASS img_0078  Model và nhãn không đồng ý về lớp
+[WARN ] POSSIBLE_WRONG_CLASS img_0083  Model và nhãn không đồng ý về lớp
+[WARN ] POSSIBLE_WRONG_CLASS img_0220  Model và nhãn không đồng ý về lớp
+
+## Tổng hợp theo mã
+warn  BOX_HUGE               3
+warn  BOX_TINY               7
+warn  EMPTY_LABEL            3
+warn  POSSIBLE_FALSE_POS     20
+warn  POSSIBLE_LOOSE_BOX     18
+warn  POSSIBLE_MISSING       12
+warn  POSSIBLE_WRONG_CLASS   3
+
+Kết luận: HOLD — Còn 34/193 ảnh có cảnh báo (17.6%), đạt hoặc vượt ngưỡng 10.0%.
