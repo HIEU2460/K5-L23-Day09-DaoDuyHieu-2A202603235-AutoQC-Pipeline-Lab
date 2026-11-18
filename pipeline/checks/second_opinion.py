@@ -40,5 +40,101 @@ from ..model_cache import get_preds  # noqa: F401
 
 
 def run(ds, cfg, preds=None):
-    # TODO
-    raise NotImplementedError("check second_opinion chưa làm")
+    if preds is None:
+        preds = get_preds(ds, cfg, "checker")
+
+    issues = []
+    limits = cfg["second_opinion"]
+
+    for image_path in ds.image_files():
+        stem = image_path.stem
+        label_lines = ds.read_label_lines(stem)
+        if label_lines is None or stem not in preds:
+            continue
+
+        image_size = ds.image_size(stem)
+        if image_size is None:
+            continue
+        image_width, image_height = image_size
+
+        labels = ds.valid_boxes(stem)
+        predictions = preds[stem]
+
+        # Prediction dùng để tìm missing/wrong-class/loose phải đủ tin cậy
+        # và đủ lớn theo guideline gán nhãn của dự án.
+        checked_predictions = []
+        for row in predictions:
+            class_id, confidence, cx, cy, width, height = row
+            area_px = width * image_width * height * image_height
+            if confidence >= limits["conf"] and area_px >= limits["min_area_px"]:
+                checked_predictions.append(
+                    (class_id, confidence, (cx, cy, width, height))
+                )
+
+        for pred_class, confidence, pred_box in checked_predictions:
+            candidates = []
+            for label in labels:
+                label_class, *label_box = label
+                overlap = iou_xywh(pred_box, label_box)
+                if overlap >= limits["iou_missing"]:
+                    candidates.append((label_class, overlap))
+
+            if not candidates:
+                issues.append(Issue(
+                    "second_opinion", WARN, "POSSIBLE_MISSING", stem,
+                    "Model thấy vật thể nhưng không có nhãn khớp",
+                    extra={"conf": confidence},
+                ))
+                continue
+
+            same_class_ious = [
+                overlap
+                for label_class, overlap in candidates
+                if label_class == pred_class
+            ]
+            if same_class_ious:
+                best_iou = max(same_class_ious)
+                if best_iou < limits["iou_loose"]:
+                    issues.append(Issue(
+                        "second_opinion", WARN, "POSSIBLE_LOOSE_BOX", stem,
+                        "Nhãn đúng lớp nhưng box có thể lỏng hoặc lệch",
+                        extra={"conf": confidence, "iou": best_iou},
+                    ))
+                continue
+
+            best_other_iou = max(overlap for _, overlap in candidates)
+            if best_other_iou >= limits["iou_match"]:
+                issues.append(Issue(
+                    "second_opinion", WARN, "POSSIBLE_WRONG_CLASS", stem,
+                    "Model và nhãn không đồng ý về lớp",
+                    extra={"conf": confidence, "iou": best_other_iou},
+                ))
+
+        # Khi tìm nhãn thừa, dùng ngưỡng fp_conf riêng và không loại
+        # prediction nhỏ: chúng vẫn có thể là bằng chứng rằng nhãn có vật.
+        fp_predictions = [
+            (cx, cy, width, height)
+            for _, confidence, cx, cy, width, height in predictions
+            if confidence >= limits["fp_conf"]
+        ]
+
+        for line_number, text in label_lines:
+            try:
+                label_class, cx, cy, width, height = parse_yolo_line(text)
+            except ValueError:
+                continue
+            if not 0 <= label_class < len(ds.classes):
+                continue
+
+            label_box = (cx, cy, width, height)
+            overlaps = [iou_xywh(label_box, pred_box) for pred_box in fp_predictions]
+            best_iou = max(overlaps, default=0.0)
+            if best_iou < limits["iou_missing"]:
+                issues.append(Issue(
+                    "second_opinion", WARN, "POSSIBLE_FALSE_POS", stem,
+                    "Nhãn không khớp với vật thể nào model nhìn thấy",
+                    line_number,
+                    {"iou": best_iou},
+                ))
+
+    return issues
