@@ -17,6 +17,7 @@ nghiệm, chưa đủ điều kiện phát hành.
 | `BAD_CLASS_NAME` | 2 issue/1 file | Máy | Ghi lại names trong YAML |
 | `BAD_FORMAT` | 3 dòng/3 ảnh | Máy | Dòng không parse được, xóa |
 | `BAD_SIZE` | 3 ảnh | Máy | Ảnh không đạt kích thước |
+| `CLASS_RARE` | 4 issue cấp dataset | Người phân tích | Lớp có ít box, cần đánh giá phân bố và bổ sung dữ liệu nếu cần |
 | `BOX_HUGE` | 3 ảnh | Người | Cần đánh giá box có hợp lý |
 | `BOX_OUT_OF_IMAGE` | 8 dòng/8 ảnh | Máy | Clip box vào ảnh |
 | `BOX_TINY` | 6 issue/4 ảnh | Người | Cần xem vật nhỏ có cần gán |
@@ -61,6 +62,12 @@ raw. `phash_dist=16` có precision 1.00 trên calibration nhưng vẫn có
 thể coi hai ảnh khác nhau có bố cục giống nhau là gần trùng. Vì vậy
 cần mở xem các cặp ảnh bị loại, không chỉ dựa vào F1.
 
+Trên lô raw, intake đã loại 7 ảnh `DUP_IMAGE_NEAR`, bên cạnh 8 ảnh
+`DUP_IMAGE_EXACT` và 11 ảnh `LEAK_TEST`. Số ảnh gần trùng bị loại
+không tăng bất thường so với số ảnh trùng chính xác; tuy nhiên đây
+vẫn chỉ là bằng chứng gián tiếp và cần mở xem các cặp ảnh trước
+khi áp dụng ngưỡng 16 cho dữ liệu khác.
+
 ## 4. Cửa chặn và điều pipeline KHÔNG bắt được
 Pipeline chính dùng ngân sách duyệt 80 ảnh và kết luận **Hold**: vòng
 cuối không còn ERROR nhưng còn 34/193 ảnh cảnh báo.
@@ -90,6 +97,12 @@ Chênh mAP50 (clean − raw) = **+0.004**.
 Clean tăng mAP50 từ 0.7258 lên 0.7301, chênh +0.0043, và tăng
 precision từ 0.7635 lên 0.8001. Tuy nhiên, mAP50-95 giảm từ 0.5117
 xuống 0.5007 và recall giảm từ 0.6490 xuống 0.6243.
+
+Chênh lệch mAP50 trung bình `clean - raw` là +0.0043, lớn hơn độ lệch
+chuẩn mAP50 của raw (0.0002) và clean (0.0014). Tuy nhiên, ước lượng
+độ nhiễu chỉ dựa trên hai seed nên chưa ổn định; đồng thời mAP50-95
+giảm 0.0110 và recall giảm 0.0247. Vì vậy chưa thể kết luận
+pipeline làm model tốt hơn một cách tổng thể.
 
 Kết quả cho thấy sự đánh đổi: model clean dự đoán thận trọng hơn và
 có precision cao hơn nhưng bỏ sót nhiều vật thể hơn. Với chỉ hai seed,
