@@ -35,5 +35,157 @@ from ..common import ERROR, parse_yolo_line  # noqa: F401
 
 
 def fix(ds, issues, cfg):
-    # TODO
-    raise NotImplementedError("autofix chưa làm")
+    fixes = []
+    errors = [issue for issue in issues if issue.severity == ERROR]
+
+    drop_line_codes = {"BAD_FORMAT", "BAD_CLASS_ID", "BOX_ZERO", "DUP_BOX"}
+    remove_image_codes = {"LEAK_TEST", "CORRUPT_IMAGE", "BAD_SIZE"}
+
+    # Xoá ảnh trước để các issue dòng của chính ảnh đó không còn được xử lý.
+    removed_stems = []
+    for issue in errors:
+        should_remove = (
+            issue.code in remove_image_codes
+            or issue.code.startswith("DUP_IMAGE_")
+        )
+        if should_remove and issue.image not in removed_stems:
+            removed_stems.append(issue.image)
+
+    removed_set = set(removed_stems)
+    for stem in removed_stems:
+        image_path = ds.image_path(stem)
+        label_path = ds.label_path(stem)
+        before = []
+
+        if image_path is not None and image_path.exists():
+            before.append(image_path.name)
+            image_path.unlink()
+        if label_path.exists():
+            before.append(label_path.name)
+            label_path.unlink()
+
+        if before:
+            fixes.append({
+                "image": stem,
+                "line": None,
+                "action": "remove_image",
+                "before": ", ".join(before),
+                "after": "đã xoá khỏi dataset",
+            })
+
+    # Ảnh thiếu nhãn phải chuyển cho người; tuyệt đối không tạo file rỗng.
+    for issue in errors:
+        if issue.code == "MISSING_LABEL_FILE" and issue.image not in removed_set:
+            fixes.append({
+                "image": issue.image,
+                "line": issue.line,
+                "action": "needs_label",
+                "before": "(không có file)",
+                "after": "chuyển người gán",
+            })
+
+    # Gom issue theo file và số dòng gốc, sau đó mỗi file chỉ được ghi lại một lần.
+    line_issues = defaultdict(lambda: defaultdict(set))
+    for issue in errors:
+        if issue.image in removed_set or issue.line is None:
+            continue
+        if issue.code in drop_line_codes or issue.code == "BOX_OUT_OF_IMAGE":
+            line_issues[issue.image][issue.line].add(issue.code)
+
+    for stem, issues_by_line in line_issues.items():
+        label_path = ds.label_path(stem)
+        if not label_path.exists():
+            continue
+
+        original_lines = label_path.read_text(
+            encoding="utf-8", errors="replace"
+        ).splitlines()
+        new_lines = []
+
+        for line_number, original_line in enumerate(original_lines, 1):
+            codes = issues_by_line.get(line_number, set())
+
+            # Xoá dòng ưu tiên hơn clip nếu một dòng có nhiều lỗi.
+            if codes & drop_line_codes:
+                fixes.append({
+                    "image": stem,
+                    "line": line_number,
+                    "action": "drop_line",
+                    "before": original_line,
+                    "after": "",
+                })
+                continue
+
+            if "BOX_OUT_OF_IMAGE" in codes:
+                try:
+                    class_id, cx, cy, width, height = parse_yolo_line(original_line)
+                except ValueError:
+                    fixes.append({
+                        "image": stem,
+                        "line": line_number,
+                        "action": "drop_line",
+                        "before": original_line,
+                        "after": "",
+                    })
+                    continue
+
+                left = max(0.0, cx - width / 2)
+                top = max(0.0, cy - height / 2)
+                right = min(1.0, cx + width / 2)
+                bottom = min(1.0, cy + height / 2)
+                new_width = right - left
+                new_height = bottom - top
+
+                if new_width <= 0 or new_height <= 0:
+                    fixes.append({
+                        "image": stem,
+                        "line": line_number,
+                        "action": "drop_line",
+                        "before": original_line,
+                        "after": "",
+                    })
+                    continue
+
+                new_cx = (left + right) / 2
+                new_cy = (top + bottom) / 2
+                new_line = (
+                    f"{class_id} {new_cx:.6f} {new_cy:.6f} "
+                    f"{new_width:.6f} {new_height:.6f}"
+                )
+                new_lines.append(new_line)
+                fixes.append({
+                    "image": stem,
+                    "line": line_number,
+                    "action": "clip_box",
+                    "before": original_line,
+                    "after": new_line,
+                })
+                continue
+
+            new_lines.append(original_line)
+
+        content = "\n".join(new_lines)
+        if new_lines:
+            content += "\n"
+        label_path.write_text(content, encoding="utf-8")
+
+    # Sửa danh sách tên lớp đúng theo cấu hình dự án.
+    if any(issue.code == "BAD_CLASS_NAME" for issue in errors):
+        data = yaml.safe_load(ds.yaml_path.read_text(encoding="utf-8")) or {}
+        old_names = data.get("names")
+        new_names = list(cfg["classes"])
+        if old_names != new_names:
+            data["names"] = new_names
+            ds.yaml_path.write_text(
+                yaml.safe_dump(data, allow_unicode=True, sort_keys=False),
+                encoding="utf-8",
+            )
+            fixes.append({
+                "image": "data.yaml",
+                "line": None,
+                "action": "rename_classes",
+                "before": str(old_names),
+                "after": str(new_names),
+            })
+
+    return fixes
